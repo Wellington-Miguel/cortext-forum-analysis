@@ -1,0 +1,187 @@
+{
+  "total_topicos": 298,
+  "taxa_resposta_pct": 86.91,
+  "taxa_resposta_staff_pct": 78.19,
+  "distribuicao_status": {
+    "Open": 138,
+    "Answered": 111,
+    "Resolved": 37,
+    "Closed": 11,
+    "Pending": 1
+  },
+  "distribuicao_categorias": {
+    "Data processing": 84,
+    "Network mapping": 79,
+    "Text processing": 51,
+    "Something else": 25,
+    "Time processing": 21,
+    "Data exploration": 20,
+    "Topic modeling": 6,
+    "SASHIMI": 2,
+    "Tools": 2,
+    "Sem Categoria": 2,
+    "Structural analysis": 2,
+    "Contingency matrix": 1,
+    "Profiling": 1,
+    "Spatial processing": 1,
+    "Correspondance analysis": 1
+  },
+  "autores_unicos": 135,
+  "top_10_autores": {
+    "Beadavi": 20,
+    "matias.milia": 20,
+    "orianabras": 18,
+    "slouvel": 14,
+    "admin": 7,
+    "PrJohnsen": 6,
+    "lise.frappier": 6,
+    "Aurélien Féron": 5,
+    "Mtt": 5,
+    "Déborah Abhervé": 5
+  },
+  "top_10_perguntas_mais_visualizadas": [
+    {
+      "posicao": 1,
+      "id": 181,
+      "title": "[HOW TO]: Post a question",
+      "views_count": 22051,
+      "category": "Something else",
+      "status": "Closed",
+      "answers_count": 0,
+      "author_name": "c24b",
+      "date_published": "2014-10-01T15:04:59+00:00",
+      "url": "https://docs.cortext.net/question/post-a-question/"
+    },
+    {
+      "posicao": 2,
+      "id": 206,
+      "title": "Country and citation data from Scopus",
+      "views_count": 20792,
+      "category": "Data processing",
+      "status": "Open",
+      "answers_count": 1,
+      "author_name": "andy yeung",
+      "date_published": "2020-04-30T05:33:17+00:00",
+      "url": "https://docs.cortext.net/question/country-and-citation-data-from-scopus/"
+    },
+    {
+      "posicao": 3,
+      "id": 179,
+      "title": "Matrice de cooccurrences, table ISIterms de la base SQLite",
+      "views_count": 16936,
+      "category": "Network mapping",
+      "status": "Open",
+      "answers_count": 0,
+      "author_name": "Lionel",
+      "date_published": "2014-11-07T15:07:23+00:00",
+      "url": "https://docs.cortext.net/question/matrice-de-cooccurrences-table-isiterms-de-la-base-sqlite/"
+    },
+    {
+      "posicao": 4,
+      "id": 180,
+      "title": "Matrice de cooccurrences à partir de la table ISIterms",
+      "views_count": 14994,
+      "category": "Network mapping",
+      "status": "Open",
+      "answers_count": 1,
+      "author_name": "Lionel",
+      "date_published": "2014-11-07T15:06:53+00:00",
+      "url": "https://docs.cortext.net/question/matrice-de-cooccurrences-a-partir-de-la-table-isiterms/"
+    },
+    {
+      "posicao": 5,
+      "id": 30,
+      "title": "PubMed and xml extraction",
+      "views_count": 10174,
+      "category": "Data processing",
+      "status": "Answered",
+      "answers_count": 2,
+      "author_name": "Christophe Gauld",
+      "date_published": "2021-10-17T20:24:55+00:00",
+      "url": "https://docs.cortext.net/question/pubmed-and-xml-extraction/"
+    },
+    {
+      "posicao": 6,
+      "id": 109,
+      "title": "Persistent error when plotting heatmap over time.",
+      "views_count": 9682,
+      "category": "Network mapping",
+      "status": "Open",
+      "answers_count": 1,
+      "author_name": "brandonwg",
+      "date_published": "2021-03-16T16:50:42+00:00",
+      "url": "https://docs.cortext.net/question/persistent-error-when-plotting-heatmap-over-time/"
+    },
+    {
+      "posicao": 7,
+      "id": 182,
+      "title": "Cooccurrences in heterogeneous mapping",
+      "views_count": 8861,
+      "category": "Network mapping",
+      "status": "Open",
+      "answers_count": 0,
+      "author_name": "admin",
+      "date_published": "2014-09-15T21:59:06+00:00",
+      "url": "https://docs.cortext.net/question/cooccurrences-in-heterogeneous-mapping/"
+    },
+    {
+      "posicao": 8,
+      "id": 183,
+      "title": "Exporter les pages html",
+      "views_count": 8241,
+      "category": "Something else",
+      "status": "Open",
+      "answers_count": 0,
+      "author_name": "admin",
+      "date_published": "2014-09-15T21:57:16+00:00",
+      "url": "https://docs.cortext.net/question/exporter-les-pages-html/"
+    },
+    {
+      "posicao": 9,
+      "id": 199,
+      "title": "Term extraction and network mapping",
+      "views_count": 5995,
+      "category": "Network mapping",
+      "status": "Open",
+      "answers_count": 2,
+      "author_name": "Anaisa",
+      "date_published": "2020-06-11T09:15:47+00:00",
+      "url": "https://docs.cortext.net/question/term-extraction-and-network-mapping/"
+    },
+    {
+      "posicao": 10,
+      "id": 112,
+      "title": "Clusters name are changing in spite of applying same parameters",
+      "views_count": 5927,
+      "category": "Network mapping",
+      "status": "Resolved",
+      "answers_count": 2,
+      "author_name": "Beadavi",
+      "date_published": "2021-02-24T10:35:20+00:00",
+      "url": "https://docs.cortext.net/question/clusters-name-are-changing-in-spite-of-applying-same-parameters/"
+    }
+  ],
+  "metricas_views": {
+    "total": 791665,
+    "media": 2656.59,
+    "max": 22051,
+    "min": 325
+  },
+  "metricas_respostas": {
+    "total": 363,
+    "media": 1.22,
+    "max": 7,
+    "min": 0
+  },
+  "metricas_votos": {
+    "total": 8,
+    "media": 0.03,
+    "max": 1,
+    "min": 0
+  },
+  "metricas_palavras_pergunta": {
+    "media": 106.41,
+    "max": 1118,
+    "min": 0
+  }
+}
