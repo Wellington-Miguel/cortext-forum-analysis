@@ -222,8 +222,11 @@ def load_pdf_report():
     if os.path.exists("relatorio_tcc_cortext.pdf"):
         with open("relatorio_tcc_cortext.pdf", "rb") as f:
             return f.read()
-    from generate_pdf_report import get_pdf_bytes
-    return get_pdf_bytes()
+    try:
+        from generate_pdf_report import get_pdf_bytes
+        return get_pdf_bytes()
+    except Exception as e:
+        return b""
 
 
 @st.cache_data(show_spinner="Compilando relatório em Word (.docx) para download...")
@@ -231,8 +234,11 @@ def load_docx_report():
     if os.path.exists("relatorio_tcc_cortext.docx"):
         with open("relatorio_tcc_cortext.docx", "rb") as f:
             return f.read()
-    from generate_docx_report import get_docx_bytes
-    return get_docx_bytes()
+    try:
+        from generate_docx_report import get_docx_bytes
+        return get_docx_bytes()
+    except Exception as e:
+        return b""
 
 
 df, summary = load_data()
@@ -243,7 +249,7 @@ if df.empty:
 # Cabeçalho
 st.markdown('<div style="margin-bottom: 12px;"><span class="tcc-badge">TCC • UFBA 2026</span> <span style="color: #94a3b8; font-size: 0.85rem; margin-left: 8px;">Pesquisa Aplicada • Assistente Sociotécnico para Data Profiling & RAG</span></div>', unsafe_allow_html=True)
 st.title("📊 Análise de Fricção em Data Parsing: Evidências Estatísticas do Fórum CorText")
-col_head_l, col_head_r = st.columns([2.6, 1.4])
+col_head_l, col_head_r = st.columns([2.3, 1.7])
 with col_head_l:
     st.markdown("""
     **Diagnóstico Empírico da Fricção Sociotécnica em Preparação e Ingestão de Corpora (CorText Manager)**  
