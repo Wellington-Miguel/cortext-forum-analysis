@@ -630,12 +630,6 @@ with tab3:
 
     with col_w2:
         st.markdown("""
-        <div class="quote-box">
-            <b>Exemplo Real de Registro no Fórum:</b><br/>
-            <i>"Prepare Corpus did not finish successfully. See the job log for additional information. However, when I look at the job log, it says 'No logs found'. job id: 446924"</i>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
         * **A Dúvida Mais Longa de Todo o Fórum (1.118 palavras - Tópico #2):**<br/>
           Pertence ao **Parsing Indireto / Derivado**. Foi catalogada sob *Network mapping* porque a ferramenta falhou com *"network you produced is empty"*, mas sua causa raiz foram problemas de separadores em um CSV. Sem entender o erro oculto, o autor colou tabelas, scripts e logs gigantescos.
         * **Na Categoria Oficial Direta (*Data processing*):**<br/>
