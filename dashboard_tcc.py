@@ -204,6 +204,14 @@ def load_data():
     df["parsing_type"] = [r[1] for r in parsing_results]
     df["parsing_cause"] = [r[2] for r in parsing_results]
 
+    def map_parsing_group(p_type):
+        if "Direto" in p_type:
+            return "Parsing Direto (Data processing)"
+        elif "Derivado" in p_type:
+            return "Parsing Indireto / Derivado"
+        return "Não Relacionado a Parsing"
+
+    df["parsing_group"] = df["parsing_type"].apply(map_parsing_group)
     df["is_data_processing"] = df["category"] == "Data processing"
 
     return df, summary
@@ -539,30 +547,84 @@ with tab3:
         dp_status = df[df["category"] == "Data processing"]["status"].value_counts().reset_index()
         dp_status.columns = ["Status", "Quantidade"]
 
+        status_colors = {
+            "Open": "#3b82f6",
+            "Answered": "#f59e0b",
+            "Resolved": "#10b981",
+            "Closed": "#64748b",
+            "Pending": "#a855f7"
+        }
+
         fig_status = px.pie(
             dp_status,
             names="Status",
             values="Quantidade",
             title="Status dos Tópicos em Data Processing",
             hole=0.4,
-            color_discrete_sequence=px.colors.sequential.Sunset
+            color="Status",
+            color_discrete_map=status_colors
         )
         fig_status.update_traces(textposition="inside", textinfo="percent+label")
         fig_status.update_layout(margin=dict(t=50, b=20, l=20, r=20))
         st.plotly_chart(fig_status, use_container_width=True)
 
+        st.markdown("""
+        <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; margin-top: 10px;">
+            <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">📖 O Que Significa Cada Status no Fórum CorText:</div>
+            <ul style="margin: 0; padding-left: 18px; color: #cbd5e1; line-height: 1.55;">
+                <li><b>🔵 Open (Aberto - 50,0% / 42 tópicos):</b> A dúvida foi publicada com sucesso e está visível a toda a comunidade. A discussão segue aberta sem uma solução formalmente confirmada pelo autor original.</li>
+                <li><b>🟡 Answered (Respondido - 31,0% / 26 tópicos):</b> O tópico recebeu ao menos uma resposta (da comunidade ou do Staff), porém o autor ainda não clicou em "Aceitar Resposta" para marcá-lo como definitivamente solucionado.</li>
+                <li><b>🟢 Resolved (Resolvido - 14,3% / 12 tópicos):</b> O problema foi formalmente finalizado e validado pelo autor da dúvida ou pela moderação com uma solução aceita.</li>
+                <li><b>🟠 Closed (Fechado - 3,6% / 3 tópicos):</b> O tópico foi trancado administrativamente pela moderação (ex.: duplicação, inatividade prolongada ou encerramento formal). Não admite novas interações.</li>
+                <li><b>🟣 Pending (Pendente - 1,2% / 1 tópico):</b> Retido na fila de moderação/revisão administrativa do WordPress/DWQA (acionado por filtros antispam, links externos ou anexos). <i>Diferença crucial de Open:</i> o tópico <b>Pending</b> não estava liberado para circulação pública normal até validação de um moderador.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("##### 📝 O Esforço Textual dos Usuários para Descrever Erros")
+
+    group_mode = st.radio(
+        "Selecione o Agrupamento Analítico da Dispersão de Palavras:",
+        options=[
+            "🎯 Por Escopo de Data Parsing (Recomendado - Rigor Metodológico)",
+            "📂 Por Categoria Oficial do Fórum (15 Categorias Originais)"
+        ],
+        horizontal=True,
+        index=0,
+        help="O agrupamento por escopo de parsing corrige distorções amostrais e aloca o outlier de 1.118 palavras em sua causa raiz."
+    )
+
     col_w1, col_w2 = st.columns([2, 1])
 
     with col_w1:
-        fig_words = px.box(
-            df,
-            x="category",
-            y="question_length_words",
-            color="category",
-            title="Dispersão da Quantidade de Palavras por Dúvida (Colando Logs e Registros)",
-            labels={"category": "Categoria", "question_length_words": "Palavras na Pergunta"}
-        )
+        if group_mode.startswith("🎯"):
+            fig_words = px.box(
+                df,
+                x="parsing_group",
+                y="question_length_words",
+                color="parsing_group",
+                color_discrete_map={
+                    "Parsing Direto (Data processing)": "#ef4444",
+                    "Parsing Indireto / Derivado": "#f59e0b",
+                    "Não Relacionado a Parsing": "#3b82f6"
+                },
+                title="Dispersão de Palavras por Escopo de Parsing (Kruskal-Wallis H=15.92, p < 0.001)",
+                labels={"parsing_group": "Escopo Metodológico", "question_length_words": "Palavras na Pergunta"},
+                category_orders={"parsing_group": [
+                    "Parsing Direto (Data processing)",
+                    "Parsing Indireto / Derivado",
+                    "Não Relacionado a Parsing"
+                ]}
+            )
+        else:
+            fig_words = px.box(
+                df,
+                x="category",
+                y="question_length_words",
+                color="category",
+                title="Dispersão da Quantidade de Palavras por Categoria Oficial do Fórum",
+                labels={"category": "Categoria Oficial", "question_length_words": "Palavras na Pergunta"}
+            )
         fig_words.update_layout(showlegend=False, margin=dict(t=50, b=20, l=20, r=20))
         st.plotly_chart(fig_words, use_container_width=True)
 
@@ -574,8 +636,12 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
         st.markdown("""
-        * Sem o entendimento do erro, usuários colam centenas de linhas de logs crus.
-        * A dúvida mais longa de Data Processing possui **1.118 palavras**, reflexo direto da falta de um diagnóstico estruturado prévio (*Data Profiling*).
+        * **A Dúvida Mais Longa de Todo o Fórum (1.118 palavras - Tópico #2):**<br/>
+          Pertence ao **Parsing Indireto / Derivado**. Foi catalogada sob *Network mapping* porque a ferramenta falhou com *"network you produced is empty"*, mas sua causa raiz foram problemas de separadores em um CSV. Sem entender o erro oculto, o autor colou tabelas, scripts e logs gigantescos.
+        * **Na Categoria Oficial Direta (*Data processing*):**<br/>
+          O maior outlier possui **387 palavras** (Tópico #280: *"Trouble parsing a SCOPUS corpus"*).
+        * **Validação Estatística (Kruskal-Wallis $H = 15,92$, $p < 0,001$):**<br/>
+          O agrupamento por escopo de parsing demonstra que o **Parsing Indireto** gera a maior sobrecarga textual média (**129,6 palavras**, mediana de 95 palavras), reflexo direto do custo cognitivo quando a falha de preparação se manifesta tardiamente.
         """)
 
 
