@@ -9,7 +9,7 @@ import json
 import re
 import math
 import subprocess
-import statistics
+import tempfile
 from datetime import datetime
 from collections import Counter
 
@@ -986,6 +986,33 @@ Para fins de reprodutibilidade e transparência científica, o dataset tabular c
 </body>
 </html>"""
     return html_content
+
+
+def get_pdf_bytes():
+    """Compila o relatório HTML/PDF em diretório temporário isolado e retorna os bytes do PDF."""
+    topics = load_and_process_data()
+    html_content = build_report_html(topics)
+    if not os.path.exists(EDGE_PATH):
+        raise FileNotFoundError(f"Navegador Edge não encontrado no caminho: {EDGE_PATH}")
+        
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_html = os.path.join(tmpdir, "relatorio_tcc.html")
+        tmp_pdf = os.path.join(tmpdir, "relatorio_tcc.pdf")
+        with open(tmp_html, "w", encoding="utf-8") as f:
+            f.write(html_content)
+            
+        cmd = [
+            "powershell",
+            "-NoProfile",
+            "-Command",
+            f'Start-Process -FilePath "{EDGE_PATH}" -ArgumentList "--headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf=`"{tmp_pdf}`" `"{tmp_html}`"" -Wait'
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if os.path.exists(tmp_pdf):
+            with open(tmp_pdf, "rb") as f:
+                return f.read()
+        else:
+            raise RuntimeError(f"Falha na compilação do PDF temporário. Erro: {result.stderr}")
 
 
 def generate_pdf():

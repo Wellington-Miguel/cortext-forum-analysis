@@ -1009,6 +1009,16 @@ def build_docx_report(topics):
     return doc
 
 
+def get_docx_bytes():
+    """Gera o relatório DOCX em memória e retorna os bytes brutos."""
+    topics = load_and_process_data()
+    doc = build_docx_report(topics)
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.getvalue()
+
+
 def generate_docx(output_path=DOCX_OUTPUT_PATH):
     print("1. Carregando e processando dados do acervo...")
     topics = load_and_process_data()

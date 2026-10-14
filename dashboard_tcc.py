@@ -217,6 +217,24 @@ def load_data():
     return df, summary
 
 
+@st.cache_data(show_spinner="Compilando relatório em PDF para download...")
+def load_pdf_report():
+    if os.path.exists("relatorio_tcc_cortext.pdf"):
+        with open("relatorio_tcc_cortext.pdf", "rb") as f:
+            return f.read()
+    from generate_pdf_report import get_pdf_bytes
+    return get_pdf_bytes()
+
+
+@st.cache_data(show_spinner="Compilando relatório em Word (.docx) para download...")
+def load_docx_report():
+    if os.path.exists("relatorio_tcc_cortext.docx"):
+        with open("relatorio_tcc_cortext.docx", "rb") as f:
+            return f.read()
+    from generate_docx_report import get_docx_bytes
+    return get_docx_bytes()
+
+
 df, summary = load_data()
 
 if df.empty:
@@ -232,45 +250,26 @@ with col_head_l:
     *Evidências quantitativas e qualitativas sobre a barreira de entrada enfrentada por pesquisadores na importação e parsing de dados heterogêneos.*
     """)
 with col_head_r:
-    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 4px;'>EXPORTAR RELATÓRIO COMPLETO</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 6px;'>BAIXAR RELATÓRIO COMPLETO</div>", unsafe_allow_html=True)
     btn_col1, btn_col2 = st.columns(2)
     with btn_col1:
-        pdf_path = "relatorio_tcc_cortext.pdf"
-        if os.path.exists(pdf_path):
-            with open(pdf_path, "rb") as f:
-                pdf_bytes = f.read()
-            st.download_button(
-                label="📄 PDF (Leitura)",
-                data=pdf_bytes,
-                file_name="Relatorio_Tecnico_TCC_CorText_UFBA.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                help="Relatório técnico completo em PDF diagramado para leitura e impressão."
-            )
-        else:
-            st.button("📄 PDF Indisponível", disabled=True, use_container_width=True)
-            
+        st.download_button(
+            label="📄 Baixar PDF",
+            data=load_pdf_report(),
+            file_name="Relatorio_Tecnico_TCC_CorText_UFBA.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            help="Relatório técnico completo em formato PDF para leitura e impressão."
+        )
     with btn_col2:
-        docx_path = "relatorio_tcc_cortext.docx"
-        if not os.path.exists(docx_path):
-            try:
-                from generate_docx_report import generate_docx
-                generate_docx(docx_path)
-            except Exception:
-                pass
-        if os.path.exists(docx_path):
-            with open(docx_path, "rb") as f:
-                docx_bytes = f.read()
-            st.download_button(
-                label="📝 DOCX (Editável)",
-                data=docx_bytes,
-                file_name="Relatorio_Tecnico_TCC_CorText_UFBA.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                use_container_width=True,
-                help="Documento DOCX editável (Word) com tabelas, notas de pesquisa e gráficos de alta resolução para customização."
-            )
-        else:
-            st.button("📝 DOCX Indisponível", disabled=True, use_container_width=True)
+        st.download_button(
+            label="📝 Baixar Word (.docx)",
+            data=load_docx_report(),
+            file_name="Relatorio_Tecnico_TCC_CorText_UFBA.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            use_container_width=True,
+            help="Relatório técnico em formato Word (.docx) 100% editável para customização e notas."
+        )
 
 # Indicadores gerais (KPIs)
 st.markdown("### 📌 Indicadores Gerais de Fricção")

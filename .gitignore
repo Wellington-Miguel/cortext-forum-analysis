@@ -36,3 +36,8 @@ wheels/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Relatórios compilados (baixados via Dashboard)
+relatorio_tcc_cortext.pdf
+relatorio_tcc_cortext.docx
+relatorio_tcc_cortext.html

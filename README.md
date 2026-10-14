@@ -143,46 +143,44 @@ crawl4ai/
 │   ├── resumo_estatistico.json
 │   └── forum_corpus.txt
 │
-├── dashboard_tcc.py          # Aplicação interativa em Streamlit
+├── dashboard_tcc.py          # Aplicação interativa em Streamlit (com download de PDF e DOCX)
 ├── extract_forum.py          # Extrator determinístico e gerador de datasets
-├── generate_pdf_report.py    # Gerador automatizado do relatório técnico completo em PDF
-├── generate_docx_report.py   # Gerador automatizado do relatório técnico editável em DOCX (Word)
-├── relatorio_tcc_cortext.pdf # Relatório técnico monográfico diagramado em A4 (PDF para leitura/impressão)
-├── relatorio_tcc_cortext.docx# Relatório técnico completo editável em Word (DOCX para alterações)
+├── generate_pdf_report.py    # Gerador / compilador do relatório técnico em PDF
+├── generate_docx_report.py   # Gerador / compilador do relatório técnico editável em DOCX (Word)
 ├── requirements.txt          # Dependências do projeto (streamlit, plotly, python-docx, matplotlib, etc.)
 └── README.md                 # Documentação completa do processo
 ```
 
 ---
 
-## 📄 Como Gerar os Relatórios Técnicos (PDF e DOCX Editável)
+## 📄 Como Obter os Relatórios Técnicos (PDF e DOCX Editável)
 
 Você pode exportar o relatório monográfico completo tanto em formato **PDF** (pronto para leitura e impressão) quanto em **DOCX** (totalmente editável no Microsoft Word, LibreOffice ou Google Docs para revisões e alterações textuais).
 
 ### 1. Diretamente pelo Dashboard (Interface Web)
-Ao abrir a aplicação Streamlit (`streamlit run dashboard_tcc.py`), os botões de download estão disponíveis no topo da página:
-* **`📄 PDF (Leitura)`**: Baixa o arquivo diagramado em PDF.
-* **`📝 DOCX (Editável)`**: Baixa o documento Word com tabelas nativas, destaques e figuras em alta resolução.
+Ao abrir a aplicação Streamlit (`streamlit run dashboard_tcc.py`), os botões de download estão disponíveis com destaque no topo da página:
+* **`📄 Baixar PDF`**: Baixa o relatório técnico diagramado em PDF.
+* **`📝 Baixar Word (.docx)`**: Baixa o documento Word com tabelas nativas, notas analíticas e gráficos em alta resolução.
 
-### 2. Pela Linha de Comando (Scripts Automatizados)
+> *Nota: Os relatórios são gerados dinamicamente sob demanda, mantendo o repositório limpo sem arquivos binários pesados desnecessários.*
+
+### 2. Pela Linha de Comando (Scripts Opcionais)
+
+Caso queira salvar uma cópia local diretamente no disco via terminal:
 
 ```powershell
-# Gerar apenas a versão editável em DOCX (Word)
+# Gerar a versão editável em DOCX (Word)
 python generate_docx_report.py
 
 # Ou usando o script unificado com flag --docx
 python generate_pdf_report.py --docx
 
-# Gerar apenas o relatório em PDF
+# Gerar o relatório em PDF
 python generate_pdf_report.py
 
 # Gerar ambas as versões (PDF e DOCX) simultaneamente
 python generate_pdf_report.py --all
 ```
-
-Os arquivos serão compilados e salvos na raiz do repositório como:
-* **`relatorio_tcc_cortext.pdf`** (~418 KB)
-* **`relatorio_tcc_cortext.docx`** (~625 KB)
 
 ---
 
