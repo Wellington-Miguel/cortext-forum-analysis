@@ -1022,4 +1022,18 @@ def generate_pdf():
 
 
 if __name__ == "__main__":
-    generate_pdf()
+    import argparse
+    parser = argparse.ArgumentParser(description="Gerador de Relatórios Técnicos (PDF / DOCX)")
+    parser.add_argument("--docx", action="store_true", help="Gera o relatório editável em formato DOCX")
+    parser.add_argument("--all", action="store_true", help="Gera tanto o relatório em PDF quanto em DOCX")
+    args = parser.parse_args()
+
+    if args.docx:
+        from generate_docx_report import generate_docx
+        generate_docx()
+    elif args.all:
+        generate_pdf()
+        from generate_docx_report import generate_docx
+        generate_docx()
+    else:
+        generate_pdf()

@@ -146,22 +146,43 @@ crawl4ai/
 ├── dashboard_tcc.py          # Aplicação interativa em Streamlit
 ├── extract_forum.py          # Extrator determinístico e gerador de datasets
 ├── generate_pdf_report.py    # Gerador automatizado do relatório técnico completo em PDF
-├── relatorio_tcc_cortext.pdf # Relatório técnico monográfico diagramado em A4
-├── requirements.txt          # Dependências do projeto (streamlit, plotly, pandas, etc.)
+├── generate_docx_report.py   # Gerador automatizado do relatório técnico editável em DOCX (Word)
+├── relatorio_tcc_cortext.pdf # Relatório técnico monográfico diagramado em A4 (PDF para leitura/impressão)
+├── relatorio_tcc_cortext.docx# Relatório técnico completo editável em Word (DOCX para alterações)
+├── requirements.txt          # Dependências do projeto (streamlit, plotly, python-docx, matplotlib, etc.)
 └── README.md                 # Documentação completa do processo
 ```
 
 ---
 
-## 📄 Como Gerar o Relatório Técnico em PDF
+## 📄 Como Gerar os Relatórios Técnicos (PDF e DOCX Editável)
 
-Para recompilar o relatório técnico monográfico completo em folha A4 com todos os gráficos vetoriais, conceitos e notas metodológicas:
+Você pode exportar o relatório monográfico completo tanto em formato **PDF** (pronto para leitura e impressão) quanto em **DOCX** (totalmente editável no Microsoft Word, LibreOffice ou Google Docs para revisões e alterações textuais).
+
+### 1. Diretamente pelo Dashboard (Interface Web)
+Ao abrir a aplicação Streamlit (`streamlit run dashboard_tcc.py`), os botões de download estão disponíveis no topo da página:
+* **`📄 PDF (Leitura)`**: Baixa o arquivo diagramado em PDF.
+* **`📝 DOCX (Editável)`**: Baixa o documento Word com tabelas nativas, destaques e figuras em alta resolução.
+
+### 2. Pela Linha de Comando (Scripts Automatizados)
 
 ```powershell
+# Gerar apenas a versão editável em DOCX (Word)
+python generate_docx_report.py
+
+# Ou usando o script unificado com flag --docx
+python generate_pdf_report.py --docx
+
+# Gerar apenas o relatório em PDF
 python generate_pdf_report.py
+
+# Gerar ambas as versões (PDF e DOCX) simultaneamente
+python generate_pdf_report.py --all
 ```
 
-O documento será compilado e salvo como **`relatorio_tcc_cortext.pdf`** (~418 KB). Ele também fica disponível para download com um clique diretamente no cabeçalho do Dashboard em Streamlit.
+Os arquivos serão compilados e salvos na raiz do repositório como:
+* **`relatorio_tcc_cortext.pdf`** (~418 KB)
+* **`relatorio_tcc_cortext.docx`** (~625 KB)
 
 ---
 
