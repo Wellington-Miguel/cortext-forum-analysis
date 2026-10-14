@@ -520,7 +520,8 @@ with tab3:
     (como *"No logs found"* ou erros genéricos de execução). Isso gera uma **sobrecarga na equipe técnica do projeto**, que atua como depurador manual.
     """)
 
-    col_op1, col_op2 = st.columns([1, 1])
+    # --- Bloco 1: Gráficos de Intervenção e Status Lado a Lado (Alinhamento Simétrico) ---
+    col_op1, col_op2 = st.columns([1, 1], gap="medium")
 
     with col_op1:
         staff_comp = pd.DataFrame({
@@ -540,7 +541,13 @@ with tab3:
             color_discrete_sequence=["#ef4444", "#3b82f6"],
             text_auto=".1f"
         )
-        fig_staff.update_layout(yaxis=dict(range=[0, 100]), showlegend=False, margin=dict(t=50, b=20, l=20, r=20))
+        fig_staff.update_layout(
+            height=350,
+            yaxis=dict(range=[0, 100], title="Taxa de Intervenção (%)"),
+            xaxis=dict(title=""),
+            showlegend=False,
+            margin=dict(t=50, b=20, l=20, r=20)
+        )
         st.plotly_chart(fig_staff, use_container_width=True)
 
     with col_op2:
@@ -560,31 +567,58 @@ with tab3:
             names="Status",
             values="Quantidade",
             title="Status dos Tópicos em Data Processing",
-            hole=0.4,
+            hole=0.45,
             color="Status",
             color_discrete_map=status_colors
         )
         fig_status.update_traces(textposition="inside", textinfo="percent+label")
-        fig_status.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+        fig_status.update_layout(
+            height=350,
+            margin=dict(t=50, b=20, l=20, r=20),
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.18, xanchor="center", x=0.5)
+        )
         st.plotly_chart(fig_status, use_container_width=True)
 
-        st.markdown("""
-        <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; margin-top: 10px;">
-            <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">📖 O Que Significa Cada Status no Fórum CorText:</div>
-            <ul style="margin: 0; padding-left: 18px; color: #cbd5e1; line-height: 1.55;">
-                <li><b>🔵 Open (Aberto - 50,0% / 42 tópicos):</b> A dúvida foi publicada com sucesso e está visível a toda a comunidade. A discussão segue aberta sem uma solução formalmente confirmada pelo autor original.</li>
-                <li><b>🟡 Answered (Respondido - 31,0% / 26 tópicos):</b> O tópico recebeu ao menos uma resposta (da comunidade ou do Staff), porém o autor ainda não clicou em "Aceitar Resposta" para marcá-lo como definitivamente solucionado.</li>
-                <li><b>🟢 Resolved (Resolvido - 14,3% / 12 tópicos):</b> O problema foi formalmente finalizado e validado pelo autor da dúvida ou pela moderação com uma solução aceita.</li>
-                <li><b>🟠 Closed (Fechado - 3,6% / 3 tópicos):</b> O tópico foi trancado administrativamente pela moderação (ex.: duplicação, inatividade prolongada ou encerramento formal). Não admite novas interações.</li>
-                <li><b>🟣 Pending (Pendente - 1,2% / 1 tópico):</b> Retido na fila de moderação/revisão administrativa do WordPress/DWQA (acionado por filtros antispam, links externos ou anexos). <i>Diferença crucial de Open:</i> o tópico <b>Pending</b> não estava liberado para circulação pública normal até validação de um moderador.</li>
-            </ul>
+    # --- Bloco 2: Guia de Status em Largura Total (Grid Responsivo Limpo) ---
+    st.markdown("""
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 14px 18px; margin: 15px 0 25px 0;">
+        <div style="font-weight: 600; font-size: 0.9rem; color: #f8fafc; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+            <span>📖</span> <span>Guia de Status dos Chamados no Fórum CorText (DW Question & Answer)</span>
         </div>
-        """, unsafe_allow_html=True)
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 0.81rem;">
+            <div style="background: rgba(30, 41, 59, 0.55); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                <b style="color: #60a5fa;">🔵 Open (50,0% | 42)</b><br/>
+                <span style="color: #cbd5e1;">Publicado e visível na comunidade. Discussão aberta sem conclusão definitiva pelo autor.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.55); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                <b style="color: #fbbf24;">🟡 Answered (31,0% | 26)</b><br/>
+                <span style="color: #cbd5e1;">Possui respostas da comunidade ou do Staff, mas aguarda o autor marcar como resolvido.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.55); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                <b style="color: #34d399;">🟢 Resolved (14,3% | 12)</b><br/>
+                <span style="color: #cbd5e1;">Formalmente solucionado e validado com confirmação do autor ou da equipe técnica.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.55); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #64748b;">
+                <b style="color: #94a3b8;">🟠 Closed (3,6% | 3)</b><br/>
+                <span style="color: #cbd5e1;">Trancado pela moderação (inatividade ou duplicação). Não aceita mais interações.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.55); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #a855f7;">
+                <b style="color: #c084fc;">🟣 Pending (1,2% | 1)</b><br/>
+                <span style="color: #cbd5e1;">Retido na moderação antispam. Diferente de Open, não circulou publicamente até validação.</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
+    st.markdown("<hr style='border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 25px 0 20px 0;'/>", unsafe_allow_html=True)
+
+    # --- Bloco 3: Dispersão de Palavras e Custo Cognitivo ---
     st.markdown("##### 📝 O Esforço Textual dos Usuários para Descrever Erros")
+    st.markdown("Analise como a falta de diagnóstico prévio de parsing leva os pesquisadores a formularem chamados extensos.")
 
     group_mode = st.radio(
-        "Selecione o Agrupamento Analítico da Dispersão de Palavras:",
+        "Selecione o Agrupamento Analítico:",
         options=[
             "🎯 Por Escopo de Data Parsing (Recomendado - Rigor Metodológico)",
             "📂 Por Categoria Oficial do Fórum (15 Categorias Originais)"
@@ -594,7 +628,7 @@ with tab3:
         help="O agrupamento por escopo de parsing corrige distorções amostrais e aloca o outlier de 1.118 palavras em sua causa raiz."
     )
 
-    col_w1, col_w2 = st.columns([2, 1])
+    col_w1, col_w2 = st.columns([13, 9], gap="medium")
 
     with col_w1:
         if group_mode.startswith("🎯"):
@@ -608,7 +642,7 @@ with tab3:
                     "Parsing Indireto / Derivado": "#f59e0b",
                     "Não Relacionado a Parsing": "#3b82f6"
                 },
-                title="Dispersão de Palavras por Escopo de Parsing (Kruskal-Wallis H=15.92, p < 0.001)",
+                title="Dispersão de Palavras por Escopo de Parsing",
                 labels={"parsing_group": "Escopo Metodológico", "question_length_words": "Palavras na Pergunta"},
                 category_orders={"parsing_group": [
                     "Parsing Direto (Data processing)",
@@ -625,18 +659,41 @@ with tab3:
                 title="Dispersão da Quantidade de Palavras por Categoria Oficial do Fórum",
                 labels={"category": "Categoria Oficial", "question_length_words": "Palavras na Pergunta"}
             )
-        fig_words.update_layout(showlegend=False, margin=dict(t=50, b=20, l=20, r=20))
+        fig_words.update_layout(
+            height=410,
+            showlegend=False,
+            margin=dict(t=50, b=20, l=20, r=20),
+            xaxis=dict(title="")
+        )
         st.plotly_chart(fig_words, use_container_width=True)
 
     with col_w2:
         st.markdown("""
-        * **A Dúvida Mais Longa de Todo o Fórum (1.118 palavras - Tópico #2):**<br/>
-          Pertence ao **Parsing Indireto / Derivado**. Foi catalogada sob *Network mapping* porque a ferramenta falhou com *"network you produced is empty"*, mas sua causa raiz foram problemas de separadores em um CSV. Sem entender o erro oculto, o autor colou tabelas, scripts e logs gigantescos.
-        * **Na Categoria Oficial Direta (*Data processing*):**<br/>
-          O maior outlier possui **387 palavras** (Tópico #280: *"Trouble parsing a SCOPUS corpus"*).
-        * **Validação Estatística (Kruskal-Wallis $H = 15,92$, $p < 0,001$):**<br/>
-          O agrupamento por escopo de parsing demonstra que o **Parsing Indireto** gera a maior sobrecarga textual média (**129,6 palavras**, mediana de 95 palavras), reflexo direto do custo cognitivo quando a falha de preparação se manifesta tardiamente.
-        """)
+        <div style="display: flex; flex-direction: column; gap: 12px; height: 100%; justify-content: center; padding-top: 15px;">
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 4px solid #f59e0b; border-radius: 8px; padding: 14px 16px;">
+                <div style="font-weight: 600; color: #fbbf24; font-size: 0.88rem; margin-bottom: 6px;">
+                    🚨 O Outlier de 1.118 Palavras (Parsing Indireto)
+                </div>
+                <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.55;">
+                    A dúvida mais longa de todo o acervo (<b>1.118 palavras — Tópico #2</b>) pertence ao <b>Parsing Indireto</b>.
+                    O autor postou sob <i>Network mapping</i> porque a ferramenta retornou rede vazia, mas a causa primária foram delimitadores em um CSV.
+                    Em contrapartida, na categoria direta <i>Data processing</i>, o maior registro tem <b>387 palavras</b> (Tópico #280).
+                </div>
+            </div>
+            
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 14px 16px;">
+                <div style="font-weight: 600; color: #60a5fa; font-size: 0.88rem; margin-bottom: 6px;">
+                    📐 Validação Estatística (Kruskal-Wallis)
+                </div>
+                <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.55;">
+                    O teste não paramétrico confirma diferença altamente significante entre os escopos:
+                    <b>H = 15,92 (p &lt; 0,001)</b> e Mann-Whitney <b>Z = 3,38 (p &lt; 0,001)</b>.<br/>
+                    O <b>Parsing Indireto</b> impõe a maior sobrecarga textual média (<b>129,6 palavras</b>, mediana de 95 palavras),
+                    comprovando o custo cognitivo da opacidade quando a falha de preparação se manifesta tardiamente.
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # Aba 4: Persistência Temporal (2014 a 2026)
