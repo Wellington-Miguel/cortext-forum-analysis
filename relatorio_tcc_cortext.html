@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico TCC: Análise de Fricção em Data Parsing no CorText</title>
+<style>
+    @page {
+        size: A4;
+        margin: 18mm 16mm 20mm 16mm;
+        @bottom-right {
+            content: "Página " counter(page) " de " counter(pages);
+            font-size: 8pt;
+            color: #64748b;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+        }
+        @bottom-left {
+            content: "TCC UFBA — Assistente de Observabilidade Sociotécnica em Data Parsing";
+            font-size: 8pt;
+            color: #64748b;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+        }
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.55;
+        font-size: 10pt;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .cover {
+        page-break-after: always;
+        text-align: center;
+        padding-top: 40px;
+    }
+    
+    .institution-header {
+        font-size: 11pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #0f172a;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+    }
+    
+    .faculty-header {
+        font-size: 9.5pt;
+        color: #475569;
+        margin-bottom: 60px;
+    }
+    
+    .tcc-badge {
+        display: inline-block;
+        padding: 5px 14px;
+        background: #f1f5f9;
+        color: #0284c7;
+        border: 1px solid #cbd5e1;
+        border-radius: 9999px;
+        font-size: 8.5pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 25px;
+    }
+    
+    h1.report-title {
+        font-size: 21pt;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.25;
+        margin: 0 auto 16px auto;
+        max-width: 90%;
+    }
+    
+    .report-subtitle {
+        font-size: 12pt;
+        color: #475569;
+        font-weight: 500;
+        line-height: 1.45;
+        margin: 0 auto 50px auto;
+        max-width: 85%;
+    }
+    
+    .author-box {
+        margin-top: 40px;
+        font-size: 10.5pt;
+        color: #1e293b;
+    }
+    
+    .author-name {
+        font-weight: 700;
+        font-size: 12pt;
+        color: #0f172a;
+    }
+
+    .meta-date {
+        font-size: 9pt;
+        color: #64748b;
+        margin-top: 70px;
+    }
+
+    /* Estilos Gerais */
+    h2.section-title {
+        font-size: 13.5pt;
+        font-weight: 800;
+        color: #0f172a;
+        border-bottom: 2px solid #0284c7;
+        padding-bottom: 6px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        page-break-after: avoid;
+    }
+    
+    h3.sub-title {
+        font-size: 11pt;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 16px;
+        margin-bottom: 8px;
+        page-break-after: avoid;
+    }
+    
+    p {
+        margin-top: 0;
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+    
+    /* Grid de KPIs */
+    .kpi-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 18px 0 24px 0;
+        page-break-inside: avoid;
+    }
+    
+    .kpi-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 14px;
+        text-align: center;
+    }
+    
+    .kpi-label {
+        font-size: 7.5pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+    
+    .kpi-val {
+        font-size: 18pt;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+    
+    .kpi-desc {
+        font-size: 7.5pt;
+        color: #0284c7;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+    
+    /* Box de Destaque */
+    .callout {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-left: 4px solid #16a34a;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin: 14px 0;
+        font-size: 9pt;
+        page-break-inside: avoid;
+    }
+    
+    .callout-title {
+        font-weight: 700;
+        color: #15803d;
+        margin-bottom: 4px;
+    }
+
+    .callout-blue {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-left: 4px solid #0284c7;
+    }
+    .callout-blue .callout-title { color: #0369a1; }
+
+    .callout-amber {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid #f59e0b;
+    }
+    .callout-amber .callout-title { color: #b45309; }
+
+    /* Tabelas */
+    table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 8.5pt;
+        margin: 14px 0;
+        page-break-inside: avoid;
+    }
+    
+    table.data-table th {
+        background: #f1f5f9;
+        color: #0f172a;
+        font-weight: 700;
+        text-align: left;
+        padding: 7px 10px;
+        border: 1px solid #cbd5e1;
+    }
+    
+    table.data-table td {
+        padding: 6px 10px;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+    }
+    
+    table.data-table tr:nth-child(even) {
+        background: #f8fafc;
+    }
+    
+    /* Figuras */
+    .chart-box {
+        text-align: center;
+        margin: 16px 0;
+        page-break-inside: avoid;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    
+    .chart-caption {
+        font-size: 8pt;
+        color: #64748b;
+        font-style: italic;
+        margin-top: 6px;
+    }
+    
+    .page-break {
+        page-break-after: always;
+    }
+    
+    .status-badge-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin: 12px 0;
+        page-break-inside: avoid;
+    }
+    
+    .status-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 7.5pt;
+        text-align: left;
+    }
+</style>
+</head>
+<body>
+
+<!-- ================= CAPA ================= -->
+<div class="cover">
+    <div class="institution-header">Universidade Federal da Bahia — UFBA</div>
+    <div class="faculty-header">Instituto de Computação | Trabalho de Conclusão de Curso (TCC)</div>
+    
+    <div class="tcc-badge">Relatório Técnico & Metodológico Integral</div>
+    
+    <h1 class="report-title">Análise de Fricção em Data Parsing: Evidências Estatísticas e Sociotécnicas do Fórum CorText</h1>
+    <div class="report-subtitle">Fundamentação Empírica para o Desenvolvimento de um Assistente Preventivo de Observabilidade Baseado em Data Profiling e RAG</div>
+    
+    <div class="kpi-container" style="max-width: 90%; margin: 40px auto;">
+        <div class="kpi-card">
+            <div class="kpi-label">Corpus Mapeado</div>
+            <div class="kpi-val">298</div>
+            <div class="kpi-desc">Tópicos Únicos (100%)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Fricção em Parsing</div>
+            <div class="kpi-val">66.4%</div>
+            <div class="kpi-desc">198 chamados afetados</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Intervenção do Staff</div>
+            <div class="kpi-val">81,0%</div>
+            <div class="kpi-desc">Dependência Humana</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Audiência Orgânica</div>
+            <div class="kpi-val">791k</div>
+            <div class="kpi-desc">Visualizações Fórum</div>
+        </div>
+    </div>
+    
+    <div class="author-box">
+        <div>Pesquisador Responsável:</div>
+        <div class="author-name">Wellington Miguel</div>
+        <div style="font-size: 9.5pt; color: #475569; margin-top: 4px;">Orientação Acadêmica — UFBA</div>
+    </div>
+    
+    <div class="meta-date">Salvador – Bahia, Brasil &nbsp;|&nbsp; October de 2026</div>
+</div>
+
+<!-- ================= SUMÁRIO EXECUTIVO & CONTEXTO ================= -->
+<h2 class="section-title">1. Sumário Executivo & Contexto da Pesquisa</h2>
+
+<p>
+O <b>CorText Manager</b> é uma das plataformas digitais mais consolidadas e longevas do cenário acadêmico global para análise de corpora textuais heterogêneos, acumulando mais de 15 anos de história sob desenvolvimento conjunto de instituições como LISIS, INRAE, IFRIS, CNRS e Université Gustave Eiffel. Projetado primordialmente para atender pesquisadores das Ciências Humanas e Sociais, o ecossistema disponibiliza algoritmos robustos de mineração de textos, modelagem de tópicos e análise de redes complexas.
+</p>
+
+<p>
+Contudo, a extrema heterogeneidade das bases documentais científicas brutas (tais como <i>Web of Science</i>, <i>Scopus</i>, <i>Factiva</i>, arquivos RIS, planilhas tabulares de repositórios governamentais e dados de mídias sociais) faz com que a fase preliminar de <b>ingestão e formatação de dados (Data Parsing)</b> represente o principal obstáculo operacional, cognitivo e técnico para a fluidez do processo investigativo.
+</p>
+
+<div class="callout callout-blue">
+    <div class="callout-title">📌 O Fenômeno "Staff as Human Parser" e a Hipótese Central da Pesquisa:</div>
+    A escassez de verificações estruturais prévias (<i>Data Profiling</i>) no momento do upload e a opacidade dos diagnósticos de falha do backend (que frequentemente emitem mensagens genéricas como <i>"No logs found"</i> ou produzem redes vazias silenciosas) forçam a equipe técnica a atuar como um <b>depurador manual crônico</b>. Em <b>81,0% dos tópicos de Data Processing</b>, desenvolvedores seniores precisaram intervir diretamente para inspecionar arquivos corrompidos e logs em linha de comando.
+</div>
+
+<p>
+Para fundamentar empiricamente essa barreira, foi desenvolvida uma infraestrutura determinística de extração completa do fórum oficial da plataforma (<code>https://docs.cortext.net/forum/</code>). A varredura auditou todo o histórico de discussões públicas, mapeando variáveis de autoria, tempo de resolução, complexidade textual, formatos de entrada e o impacto sociotécnico dessa fricção.
+</p>
+
+<!-- ================= METODOLOGIA DE EXTRAÇÃO ================= -->
+<h2 class="section-title">2. Engenharia de Extração e Auditoria dos Dados (`extract_forum.py`)</h2>
+
+<p>
+A coleta e estruturação dos dados foram operacionalizadas através do extrator customizado <a href="extract_forum.py"><code>extract_forum.py</code></a>, estruturado em três fases estritamente auditáveis e determinísticas:
+</p>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%;">Fase Metodológica</th>
+            <th style="width: 35%;">Mecanismo Técnico Empregado</th>
+            <th style="width: 50%;">Garantia de Integridade e Cobertura</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>Fase 1: Varredura Sequencial</b></td>
+            <td>Iteração sequencial estrita da listagem oficial: páginas <code>/page/1/</code> a <code>/page/34/</code>.</td>
+            <td><b>Cobertura Total (298 tópicos únicos):</b> páginas 1 a 33 (9 tópicos cada) + página 34 (1 tópico). Zero filtros e zero duplicatas.</td>
+        </tr>
+        <tr>
+            <td><b>Fase 2: Extração Profunda</b></td>
+            <td>Requisições assíncronas concorrentes via <code>aiohttp</code> com semáforo controlado e retries automáticos.</td>
+            <td>Captura de marcações semânticas <b>JSON-LD Schema</b> do WordPress (datas exatas em ISO 8601), dúvida na íntegra e array completo de respostas.</td>
+        </tr>
+        <tr>
+            <td><b>Fase 3: Enriquecimento</b></td>
+            <td>Detecção de autores oficiais do projeto (badges de <i>🛡️ Staff do CorText</i>) e cálculo de métricas textuais.</td>
+            <td><b>Paridade 100%:</b> sincronização simultânea nos formatos <code>forum_topics_full.json</code>, <code>forum_topics.csv</code> e <code>forum_corpus.md</code>.</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ================= NOTA METODOLÓGICA DOS 114 TÓPICOS DERIVADOS ================= -->
+<h2 class="section-title">3. Nota Metodológica Integral dos 114 Tópicos Derivados</h2>
+
+<p>
+Uma das descobertas metodológicas mais contundentes deste estudo foi a constatação de que a categorização oficial fornecida pelo fórum subdimensiona severamente a crise de preparação de dados. Oficialmente, a categoria <code>Data processing</code> abriga <b>84 tópicos (28,2%)</b>. Entretanto, uma análise epistêmica e semântica das discussões revelou outros <b>114 tópicos (38,3%)</b> protocolados em outras etapas analíticas, mas decorrentes exclusivamente de problemas em <i>Data Parsing</i>.
+</p>
+
+<div class="callout callout-amber">
+    <div class="callout-title">📐 Justificativa Metodológica da Ampliação do Escopo (198 tópicos / 66,4% do acervo):</div>
+    Quando o usuário comete um equívoco de formatação (ex.: separador incorreto em CSV ou tags de autor não padronizadas), a falha muitas vezes <b>não quebra o parser imediatamente</b>, mas gera um corpus estruturalmente inconsistente. O erro só explode tardiamente em módulos subsequentes (como <i>Network mapping</i> ou <i>Topic modeling</i>).
+</div>
+
+<h3 class="sub-title">Regras de Elegibilidade e Critérios Heurísticos dos 114 Tópicos Derivados:</h3>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 32%;">Critério Analítico</th>
+            <th style="width: 16%; text-align: center;">Tópicos Afetados</th>
+            <th style="width: 52%;">Evidência Heurística e Regras Aplicadas</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>Critério 1: Manipulação de Formato Bruto Heterogêneo</b></td>
+            <td style="text-align: center;"><b>62 tópicos</b><br/>(54,4% dos derivados)</td>
+            <td>Tópicos em outras categorias que contêm menção explícita a arquivos e dialetos externos (<i>CSV, ZIP, Scopus, WOS, RIS, Factiva, PubMed, Excel</i>), lidando com problemas de separadores ou tags bibliográficas.</td>
+        </tr>
+        <tr>
+            <td><b>Critério 2: Indexação, Parsing e Encoding em Outras Etapas</b></td>
+            <td style="text-align: center;"><b>50 tópicos</b><br/>(43,9% dos derivados)</td>
+            <td>Discussões mencionando expressamente ferramentas de estruturação preliminar (<i>Corpus Terms Indexer, Corpus List Indexer, upload, encoding UTF-8, subcorpus</i>) durante a execução de etapas de mineração de texto ou redes.</td>
+        </tr>
+        <tr>
+            <td><b>Critério 3: Sintomas Patognomônicos de Corpus Vazio/Corrompido</b></td>
+            <td style="text-align: center;"><b>2 tópicos</b><br/>(1,8% dos derivados)</td>
+            <td>Chamados reportando o sintoma clássico de ingestão quebrada: geração de redes vazias (<i>"network you produced is empty"</i> ou <i>"reseau vide"</i>) e ausência de logs devido a colunas obrigatórias vazias.</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Decomposição das Dúvidas: Parsing Direto vs. Derivado</text><path d="M 135.0 45.0 A 100 100 0 0 1 202.27785584168583 218.98439101151905 L 174.0211563881778 187.91094678668105 A 58 58 0 0 0 135.0 87.0 Z" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/><rect x="275" y="55" width="12" height="12" rx="3" fill="#f59e0b"/><text x="295" y="65" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Parsing Derivado (Outras Etapas): <tspan font-weight="700" fill="#0f172a">114</tspan> (38.3%)</text><path d="M 202.27785584168583 218.98439101151905 A 100 100 0 0 1 49.108808984151025 196.21233548549552 L 85.1831092108076 174.7031545815874 A 58 58 0 0 0 174.0211563881778 187.91094678668105 Z" fill="#ef4444" stroke="#ffffff" stroke-width="2"/><rect x="275" y="79" width="12" height="12" rx="3" fill="#ef4444"/><text x="295" y="89" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Parsing Direto (Data processing): <tspan font-weight="700" fill="#0f172a">84</tspan> (28.2%)</text><path d="M 49.108808984151025 196.21233548549552 A 100 100 0 0 1 134.99999999999997 45.0 L 135.0 87.0 A 58 58 0 0 0 85.1831092108076 174.7031545815874 Z" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/><rect x="275" y="103" width="12" height="12" rx="3" fill="#3b82f6"/><text x="295" y="113" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Não Relacionado a Parsing: <tspan font-weight="700" fill="#0f172a">100</tspan> (33.6%)</text><text x="135" y="142" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="800" fill="#0f172a">298</text><text x="135" y="159" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="600" fill="#64748b" text-transform="uppercase">Tópicos</text></svg>
+    <div class="chart-caption">Figura 1: Decomposição analítica do acervo do fórum CorText demonstrando o escopo expandido de Data Parsing.</div>
+</div>
+
+<!-- ================= FORMATOS DE ENTRADA ================= -->
+<h2 class="section-title">4. Mapeamento da Fricção por Formato de Entrada</h2>
+
+<p>
+Ao isolar os tópicos específicos de <i>Data processing</i>, identifica-se a distribuição empírica dos formatos científicos que mais geram atrito na ingestão. O ranking evidencia que a manipulação de arquivos delimitados tabulares e exportações de bases bibliográficas líderes representam quase a totalidade dos incidentes.
+</p>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Ranking de Formatos Problemáticos em Data Processing</text><text x="145" y="64" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">CSV / Delimitador</text><rect x="155" y="50" width="330.0" height="20" rx="4" fill="#3b82f6"/><text x="493.0" y="64" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">25 <tspan font-weight="400" fill="#64748b">(29.8%)</tspan></text><text x="145" y="98" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">Arquivos ZIP</text><rect x="155" y="84" width="316.8" height="20" rx="4" fill="#3b82f6"/><text x="479.8" y="98" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">24 <tspan font-weight="400" fill="#64748b">(28.6%)</tspan></text><text x="145" y="132" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">Web of Science (WOS)</text><rect x="155" y="118" width="250.8" height="20" rx="4" fill="#3b82f6"/><text x="413.8" y="132" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">19 <tspan font-weight="400" fill="#64748b">(22.6%)</tspan></text><text x="145" y="166" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">Scopus</text><rect x="155" y="152" width="145.2" height="20" rx="4" fill="#3b82f6"/><text x="308.2" y="166" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">11 <tspan font-weight="400" fill="#64748b">(13.1%)</tspan></text><text x="145" y="200" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">Formato RIS</text><rect x="155" y="186" width="145.2" height="20" rx="4" fill="#3b82f6"/><text x="308.2" y="200" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">11 <tspan font-weight="400" fill="#64748b">(13.1%)</tspan></text><text x="145" y="234" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155" font-weight="600">Factiva</text><rect x="155" y="220" width="52.800000000000004" height="20" rx="4" fill="#3b82f6"/><text x="215.8" y="234" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#0f172a" font-weight="700">4 <tspan font-weight="400" fill="#64748b">(4.8%)</tspan></text></svg>
+    <div class="chart-caption">Figura 2: Frequência de formatos brutos problemáticos identificados nos chamados de preparação de dados.</div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ================= OPACIDADE E DEPENDÊNCIA DO STAFF ================= -->
+<h2 class="section-title">5. A Opacidade Diagnóstica e a Sobrecarga do Suporte Humano</h2>
+
+<p>
+A falta de explicabilidade técnica das mensagens de erro gera uma dependência direta e contínua do suporte técnico dos mantenedores do CorText. O comparativo revela que as dúvidas de <i>Data processing</i> demandam uma taxa de atendimento manual de <b>81,0%</b> pelo Staff, superando até mesmo etapas metodologicamente complexas da plataforma.
+</p>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Dependência da Equipe Técnica (Staff as Human Parser)</text><line x1="80" y1="45" x2="80" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="80" y1="215" x2="480" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="75" y1="215.0" x2="480" y2="215.0" stroke="#f1f5f9" stroke-width="1"/><text x="70" y="219.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">0%</text><line x1="75" y1="173.75" x2="480" y2="173.75" stroke="#f1f5f9" stroke-width="1"/><text x="70" y="177.75" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">25%</text><line x1="75" y1="132.5" x2="480" y2="132.5" stroke="#f1f5f9" stroke-width="1"/><text x="70" y="136.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">50%</text><line x1="75" y1="91.25" x2="480" y2="91.25" stroke="#f1f5f9" stroke-width="1"/><text x="70" y="95.25" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">75%</text><line x1="75" y1="50.0" x2="480" y2="50.0" stroke="#f1f5f9" stroke-width="1"/><text x="70" y="54.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">100%</text><rect x="150" y="81.35" width="90" height="133.65" rx="4" fill="#ef4444"/><text x="195" y="73.35" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="800" fill="#b91c1c">81.0%</text><text x="195" y="232" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Data Processing</text><text x="195" y="246" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">(Direto: 68/84)</text><rect x="320" y="87.78500000000001" width="90" height="127.21499999999999" rx="4" fill="#3b82f6"/><text x="365" y="79.78500000000001" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="800" fill="#1d4ed8">77.1%</text><text x="365" y="232" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Demais Categorias</text><text x="365" y="246" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#64748b">(165/214)</text></svg>
+    <div class="chart-caption">Figura 3: Taxa de intervenção manual da equipe do CorText (Staff) por categoria de problema.</div>
+</div>
+
+<h3 class="sub-title">Distribuição dos Chamados por Status (DW Question & Answer):</h3>
+<p>
+A inspeção dos estados de conclusão dos tópicos em <i>Data processing</i> demonstra que metade do acervo permanece em aberto, refletindo a dificuldade do usuário comum em confirmar o fechamento formal de suas dúvidas:
+</p>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Status dos Chamados em Data Processing</text><path d="M 135.0 45.0 A 100 100 0 0 1 135.0 245.0 L 135.0 203.0 A 58 58 0 0 0 135.0 87.0 Z" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/><rect x="275" y="55" width="12" height="12" rx="3" fill="#3b82f6"/><text x="295" y="65" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Open (Aberto): <tspan font-weight="700" fill="#0f172a">42</tspan> (50.0%)</text><path d="M 135.0 245.0 A 100 100 0 0 1 41.912625135579574 108.4658975633605 L 81.00932257863616 123.8102205867491 A 58 58 0 0 0 135.0 203.0 Z" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/><rect x="275" y="79" width="12" height="12" rx="3" fill="#f59e0b"/><text x="295" y="89" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Answered (Respondido): <tspan font-weight="700" fill="#0f172a">26</tspan> (31.0%)</text><path d="M 41.912625135579574 108.4658975633605 A 100 100 0 0 1 105.52448255890963 49.44271942138592 L 117.90419988416758 89.57677726440383 A 58 58 0 0 0 81.00932257863616 123.8102205867491 Z" fill="#10b981" stroke="#ffffff" stroke-width="2"/><rect x="275" y="103" width="12" height="12" rx="3" fill="#10b981"/><text x="295" y="113" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Resolved (Resolvido): <tspan font-weight="700" fill="#0f172a">12</tspan> (14.3%)</text><path d="M 105.52448255890963 49.44271942138592 A 100 100 0 0 1 127.52699064135761 45.27962028188199 L 130.66565457198743 87.16217976349155 A 58 58 0 0 0 117.90419988416758 89.57677726440383 Z" fill="#64748b" stroke="#ffffff" stroke-width="2"/><rect x="275" y="127" width="12" height="12" rx="3" fill="#64748b"/><text x="295" y="137" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Closed (Fechado): <tspan font-weight="700" fill="#0f172a">3</tspan> (3.6%)</text><path d="M 127.52699064135761 45.27962028188199 A 100 100 0 0 1 135.00000000000006 45.0 L 135.00000000000003 87.0 A 58 58 0 0 0 130.66565457198743 87.16217976349155 Z" fill="#a855f7" stroke="#ffffff" stroke-width="2"/><rect x="275" y="151" width="12" height="12" rx="3" fill="#a855f7"/><text x="295" y="161" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#334155">Pending (Pendente): <tspan font-weight="700" fill="#0f172a">1</tspan> (1.2%)</text><text x="135" y="142" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="800" fill="#0f172a">84</text><text x="135" y="159" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="600" fill="#64748b" text-transform="uppercase">Tópicos DP</text></svg>
+    <div class="chart-caption">Figura 4: Proporção dos status registrados para os chamados da categoria oficial Data processing.</div>
+</div>
+
+<div class="status-badge-grid">
+    <div class="status-item" style="border-left: 3px solid #3b82f6;">
+        <b style="color: #2563eb;">🔵 Open (50,0%)</b><br/>
+        Publicado e visível na comunidade. Dúvida aberta sem conclusão formal pelo autor.
+    </div>
+    <div class="status-item" style="border-left: 3px solid #f59e0b;">
+        <b style="color: #d97706;">🟡 Answered (31,0%)</b><br/>
+        Recebeu respostas da equipe/comunidade, mas aguarda confirmação de resolução.
+    </div>
+    <div class="status-item" style="border-left: 3px solid #10b981;">
+        <b style="color: #059669;">🟢 Resolved (14,3%)</b><br/>
+        Validado formalmente com solução definitiva confirmada pelo autor ou Staff.
+    </div>
+    <div class="status-item" style="border-left: 3px solid #64748b;">
+        <b style="color: #475569;">🟠 Closed (3,6%)</b><br/>
+        Trancado administrativamente por duplicação ou encerramento pela moderação.
+    </div>
+    <div class="status-item" style="border-left: 3px solid #a855f7;">
+        <b style="color: #9333ea;">🟣 Pending (1,2%)</b><br/>
+        Retido na moderação antispam do WordPress. Não circulou publicamente até validação.
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ================= ESTATÍSTICA E DISPERSÃO TEXTUAL ================= -->
+<h2 class="section-title">6. O Custo Cognitivo da Opacidade: Evidências Estatísticas Textuais</h2>
+
+<p>
+Para medir quantitativamente o esforço despendido pelos usuários na formulação de seus chamados, analisou-se a extensão textual (quantidade de palavras por pergunta). A hipótese testada afirma que <b>quanto mais opaco e tardio o erro, maior o volume de texto, logs crípticos e tabelas que o usuário se vê compelido a colar no chamado</b>.
+</p>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Dispersão Textual por Escopo (Kruskal-Wallis H=15.92, p < 0.001)</text><line x1="65" y1="45" x2="65" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="65" y1="215" x2="510" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="60" y1="215.0" x2="510" y2="215.0" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="219.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">0</text><line x1="60" y1="187.5" x2="510" y2="187.5" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="191.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">200</text><line x1="60" y1="160.0" x2="510" y2="160.0" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="164.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">400</text><line x1="60" y1="132.5" x2="510" y2="132.5" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="136.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">600</text><line x1="60" y1="105.0" x2="510" y2="105.0" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="109.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">800</text><line x1="60" y1="77.5" x2="510" y2="77.5" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="81.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">1000</text><line x1="60" y1="50.0" x2="510" y2="50.0" stroke="#f1f5f9" stroke-width="1"/><text x="55" y="54.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">1200</text><line x1="140" y1="198.9125" x2="140" y2="186.125" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="125" y1="186.125" x2="155" y2="186.125" stroke="#ef4444" stroke-width="1.5"/><line x1="140" y1="207.85" x2="140" y2="213.35" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="125" y1="213.35" x2="155" y2="213.35" stroke="#ef4444" stroke-width="1.5"/><rect x="110" y="198.9125" width="60" height="8.9375" rx="2" fill="#ef4444" fill-opacity="0.25" stroke="#ef4444" stroke-width="2"/><line x1="110" y1="203.79375" x2="170" y2="203.79375" stroke="#ef4444" stroke-width="3"/><circle cx="140" cy="183.375" r="3" fill="#ef4444" stroke="#ffffff" stroke-width="1"/><circle cx="140" cy="179.6625" r="3" fill="#ef4444" stroke="#ffffff" stroke-width="1"/><circle cx="140" cy="161.7875" r="3" fill="#ef4444" stroke="#ffffff" stroke-width="1"/><text x="147" y="165.7875" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" font-weight="bold" fill="#ef4444">387 w</text><text x="140" y="232" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="700" fill="#0f172a">Parsing Direto (DP)</text><text x="140" y="246" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">N=84 | Med: 81.5</text><line x1="285" y1="192.5875" x2="285" y2="171.0" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="270" y1="171.0" x2="300" y2="171.0" stroke="#f59e0b" stroke-width="1.5"/><line x1="285" y1="207.025" x2="285" y2="212.9375" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="270" y1="212.9375" x2="300" y2="212.9375" stroke="#f59e0b" stroke-width="1.5"/><rect x="255" y="192.5875" width="60" height="14.4375" rx="2" fill="#f59e0b" fill-opacity="0.25" stroke="#f59e0b" stroke-width="2"/><line x1="255" y1="201.9375" x2="315" y2="201.9375" stroke="#f59e0b" stroke-width="3"/><circle cx="285" cy="170.0375" r="3" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/><circle cx="285" cy="165.225" r="3" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/><circle cx="285" cy="153.675" r="3" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/><circle cx="285" cy="141.025" r="3" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/><circle cx="285" cy="61.275000000000006" r="3" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/><text x="292" y="65.275" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" font-weight="bold" fill="#f59e0b">1118 w</text><text x="285" y="232" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="700" fill="#0f172a">Parsing Indireto</text><text x="285" y="246" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">N=114 | Med: 95.0</text><line x1="430" y1="200.15" x2="430" y2="186.8125" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="415" y1="186.8125" x2="445" y2="186.8125" stroke="#3b82f6" stroke-width="1.5"/><line x1="430" y1="209.225" x2="430" y2="213.625" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/><line x1="415" y1="213.625" x2="445" y2="213.625" stroke="#3b82f6" stroke-width="1.5"/><rect x="400" y="200.15" width="60" height="9.074999999999989" rx="2" fill="#3b82f6" fill-opacity="0.25" stroke="#3b82f6" stroke-width="2"/><line x1="400" y1="205.58125" x2="460" y2="205.58125" stroke="#3b82f6" stroke-width="3"/><circle cx="430" cy="184.3375" r="3" fill="#3b82f6" stroke="#ffffff" stroke-width="1"/><circle cx="430" cy="180.4875" r="3" fill="#3b82f6" stroke="#ffffff" stroke-width="1"/><circle cx="430" cy="172.2375" r="3" fill="#3b82f6" stroke="#ffffff" stroke-width="1"/><circle cx="430" cy="156.2875" r="3" fill="#3b82f6" stroke="#ffffff" stroke-width="1"/><circle cx="430" cy="109.81250000000001" r="3" fill="#3b82f6" stroke="#ffffff" stroke-width="1"/><text x="430" y="232" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="700" fill="#0f172a">Não Relacionado</text><text x="430" y="246" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">N=100 | Med: 68.5</text></svg>
+    <div class="chart-caption">Figura 5: Dispersão da quantidade de palavras por dúvida conforme o escopo analítico de Data Parsing.</div>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Escopo Metodológico</th>
+            <th style="text-align: center;">Amostra ($N$)</th>
+            <th style="text-align: center;">Mediana</th>
+            <th style="text-align: center;">Média</th>
+            <th style="text-align: center;">Terceiro Quartil (Q3)</th>
+            <th style="text-align: center;">Valor Máximo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>1. Parsing Indireto / Derivado</b></td>
+            <td style="text-align: center;">114</td>
+            <td style="text-align: center;"><b>95,0 palavras</b></td>
+            <td style="text-align: center;"><b>129,6 palavras</b></td>
+            <td style="text-align: center;">163 palavras</td>
+            <td style="text-align: center;"><b>1.118 palavras</b> (Tópico #2)</td>
+        </tr>
+        <tr>
+            <td><b>2. Parsing Direto (*Data processing*)</b></td>
+            <td style="text-align: center;">84</td>
+            <td style="text-align: center;">81,5 palavras</td>
+            <td style="text-align: center;">93,8 palavras</td>
+            <td style="text-align: center;">117 palavras</td>
+            <td style="text-align: center;">387 palavras (Tópico #280)</td>
+        </tr>
+        <tr>
+            <td><b>3. Não Relacionado a Parsing</b></td>
+            <td style="text-align: center;">100</td>
+            <td style="text-align: center;">68,5 palavras</td>
+            <td style="text-align: center;">90,6 palavras</td>
+            <td style="text-align: center;">108 palavras</td>
+            <td style="text-align: center;">765 palavras (Tópico #109)</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="callout callout-blue">
+    <div class="callout-title">📐 Testes de Hipótese e Validação Estatística Não-Paramétrica:</div>
+    <ul>
+        <li><b>Teste de Kruskal-Wallis:</b> $H = 15,923 \quad (p = 0,00035 < 0,001)$. Rejeita-se categoricamente a hipótese nula com 99,9% de confiança: há diferença altamente significante entre as distribuições textuais dos três grupos.</li>
+        <li><b>Teste de Mann-Whitney (Parsing Geral vs. Outros):</b> $Z = 3,380 \quad (p = 0,0007 < 0,001)$. Os tópicos que envolvem Data Parsing exigem significativamente mais palavras e esforço descritivo do que outros tópicos.</li>
+        <li><b>O Fenômeno do Tópico #2 (1.118 palavras):</b> A dúvida mais extensa de todo o fórum pertence ao grupo de <i>Parsing Indireto</i>. O autor relatou que o mapeamento de rede falhou dizendo <i>"network you produced is empty"</i>; sem compreender que a causa raiz residia em delimitadores corrompidos de CSV, colou tabelas, scripts e centenas de linhas de dados brutos na tentativa de ser compreendido.</li>
+    </ul>
+</div>
+
+<!-- ================= SÉRIE TEMPORAL ================= -->
+<h2 class="section-title">7. Persistência Temporal: Uma Barreira Estrutural (2014 a 2026)</h2>
+
+<p>
+Ao longo de 12 anos analisados (2014 a 2026), observa-se que a incidência de problemas de preparação de dados não decorre de bugs efêmeros ou versões isoladas de software, mas representa uma constante histórica na utilização da ferramenta:
+</p>
+
+<div class="chart-box">
+    <svg width="540" height="270" viewBox="0 0 540 270" xmlns="http://www.w3.org/2000/svg"><text x="270.0" y="24" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Persistência Temporal: Data Parsing vs. Outros Temas (2014 a 2026)</text><line x1="50" y1="45" x2="50" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="50" y1="215" x2="515" y2="215" stroke="#cbd5e1" stroke-width="1"/><line x1="45" y1="215.0" x2="515" y2="215.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="219.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">0</text><line x1="45" y1="182.0" x2="515" y2="182.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="186.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">10</text><line x1="45" y1="149.0" x2="515" y2="149.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="153.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">20</text><line x1="45" y1="116.0" x2="515" y2="116.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="120.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">30</text><line x1="45" y1="83.0" x2="515" y2="83.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="87.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">40</text><line x1="45" y1="50.0" x2="515" y2="50.0" stroke="#f1f5f9" stroke-width="1"/><text x="42" y="54.0" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#64748b">50</text><rect x="65.0" y="191.9" width="26" height="23.1" fill="#f59e0b"/><rect x="65.0" y="178.70000000000002" width="26" height="13.200000000000001" fill="#3b82f6"/><text x="78.0" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 78.0, 230)">14</text><rect x="98.84615384615384" y="201.8" width="26" height="13.200000000000001" fill="#f59e0b"/><rect x="98.84615384615384" y="195.20000000000002" width="26" height="6.6000000000000005" fill="#3b82f6"/><text x="111.84615384615384" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 111.84615384615384, 230)">15</text><rect x="132.69230769230768" y="178.7" width="26" height="36.3" fill="#f59e0b"/><rect x="132.69230769230768" y="158.89999999999998" width="26" height="19.8" fill="#3b82f6"/><text x="145.69230769230768" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 145.69230769230768, 230)">16</text><rect x="166.53846153846155" y="139.1" width="26" height="75.9" fill="#f59e0b"/><rect x="166.53846153846155" y="119.3" width="26" height="19.8" fill="#3b82f6"/><text x="179.53846153846155" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 179.53846153846155, 230)">17</text><rect x="200.3846153846154" y="135.8" width="26" height="79.2" fill="#f59e0b"/><rect x="200.3846153846154" y="86.30000000000001" width="26" height="49.5" fill="#3b82f6"/><text x="213.3846153846154" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 213.3846153846154, 230)">18</text><rect x="234.23076923076923" y="125.89999999999999" width="26" height="89.10000000000001" fill="#f59e0b"/><rect x="234.23076923076923" y="99.49999999999999" width="26" height="26.400000000000002" fill="#3b82f6"/><text x="247.23076923076923" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 247.23076923076923, 230)">19</text><rect x="268.0769230769231" y="122.6" width="26" height="92.4" fill="#f59e0b"/><rect x="268.0769230769231" y="89.6" width="26" height="33.0" fill="#3b82f6"/><text x="281.0769230769231" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 281.0769230769231, 230)">20</text><rect x="301.9230769230769" y="96.2" width="26" height="118.8" fill="#f59e0b"/><rect x="301.9230769230769" y="30.200000000000003" width="26" height="66.0" fill="#3b82f6"/><text x="314.9230769230769" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 314.9230769230769, 230)">21</text><rect x="335.7692307692308" y="178.7" width="26" height="36.3" fill="#f59e0b"/><rect x="335.7692307692308" y="125.89999999999998" width="26" height="52.800000000000004" fill="#3b82f6"/><text x="348.7692307692308" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 348.7692307692308, 230)">22</text><rect x="369.61538461538464" y="188.6" width="26" height="26.400000000000002" fill="#f59e0b"/><rect x="369.61538461538464" y="162.2" width="26" height="26.400000000000002" fill="#3b82f6"/><text x="382.61538461538464" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 382.61538461538464, 230)">23</text><rect x="403.46153846153845" y="188.6" width="26" height="26.400000000000002" fill="#f59e0b"/><rect x="403.46153846153845" y="178.7" width="26" height="9.9" fill="#3b82f6"/><text x="416.46153846153845" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 416.46153846153845, 230)">24</text><rect x="437.3076923076923" y="188.6" width="26" height="26.400000000000002" fill="#f59e0b"/><rect x="437.3076923076923" y="182.0" width="26" height="6.6000000000000005" fill="#3b82f6"/><text x="450.3076923076923" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 450.3076923076923, 230)">25</text><rect x="471.1538461538462" y="208.4" width="26" height="6.6000000000000005" fill="#f59e0b"/><rect x="471.1538461538462" y="208.4" width="26" height="0.0" fill="#3b82f6"/><text x="484.1538461538462" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="9" fill="#334155" transform="rotate(-40, 484.1538461538462, 230)">26</text><rect x="160" y="252" width="12" height="12" rx="2" fill="#f59e0b"/><text x="178" y="262" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#334155">Envolvendo Data Parsing (Direto + Derivado)</text><rect x="365" y="252" width="12" height="12" rx="2" fill="#3b82f6"/><text x="383" y="262" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" fill="#334155">Outros Temas</text></svg>
+    <div class="chart-caption">Figura 6: Volume longitudinal de tópicos ao longo dos anos, categorizados por envolvimento com Data Parsing.</div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ================= DIRETRIZES DO ASSISTENTE E CONCLUSÃO ================= -->
+<h2 class="section-title">8. Diretrizes de Engenharia para o Assistente Sociotécnico</h2>
+
+<p>
+Os achados empíricos e quantitativos deste relatório fornecem as bases conceituais para a especificação do <b>Assistente de Observabilidade Preventiva</b> proposto no Trabalho de Conclusão de Curso (TCC). O assistente visa atuar antes e durante a submissão dos trabalhos no CorText Manager, desonerando a equipe técnica e conferindo autonomia ao pesquisador:
+</p>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 28%;">Módulo da Arquitetura</th>
+            <th style="width: 38%;">Funcionalidade Sociotécnica</th>
+            <th style="width: 34%;">Impacto Direto na Fricção</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>1. Pre-Flight Data Profiler</b></td>
+            <td>Inspeção prévia em tempo de cliente do arquivo bruto: inferência de delimitador (<code>,</code>, <code>;</code>, <code>\t</code>), detecção de charset (<code>UTF-8</code> vs <code>Windows-1252</code>) e validação de cabeçalhos mínimos obrigatórios.</td>
+            <td>Mitiga <b>58,4%</b> dos erros de Data Processing causados por arquivos CSV mal formatados ou ZIPs aninhados.</td>
+        </tr>
+        <tr>
+            <td><b>2. Log Explainer & RAG</b></td>
+            <td>Recuperação Aumentada por Geração (RAG) treinada no corpus consolidado do fórum (<code>forum_corpus.md</code>) para interpretar mensagens crípticas (<i>"No logs found"</i>, jobs terminados prematuramente).</td>
+            <td>Reduz a dependência do <i>"Staff as Human Parser"</i>, atualmente em <b>81,0%</b> dos chamados de preparação.</td>
+        </tr>
+        <tr>
+            <td><b>3. Early-Warning Parser</b></td>
+            <td>Validador de grafos que emite alertas preventivos quando um corpus importado resulta em matriz de adjacência zerada, antes de o usuário submeter o job à fila de computação.</td>
+            <td>Extingue os sintomas patognomônicos de <i>"network you produced is empty"</i> (como o caso emblemático do Tópico #2 de 1.118 palavras).</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 class="sub-title">Dicionário de Variáveis do Dataset Auditado (`forum_topics.csv`):</h3>
+<p>
+Para fins de reprodutibilidade e transparência científica, o dataset tabular consolidado disponibiliza 25 atributos métricos:
+<code>id</code>, <code>page</code>, <code>title</code>, <code>url</code>, <code>status</code>, <code>is_resolved</code>, <code>is_answered</code>, <code>category</code>, <code>author_name</code>, <code>author_user</code>, <code>time_ago</code>, <code>date_published</code>, <code>date_modified</code>, <code>views_count</code>, <code>answers_count</code>, <code>votes_count</code>, <code>question_length_chars</code>, <code>question_length_words</code>, <code>tags</code>, <code>has_staff_answer</code>, <code>first_answer_author</code>, <code>answers_authors</code>, <code>is_parsing_related</code>, <code>parsing_type</code> e <code>parsing_cause</code>.
+</p>
+
+<div class="callout callout-blue" style="margin-top: 24px;">
+    <div class="callout-title">Conclusão da Nota Técnica:</div>
+    A integração entre <i>Data Profiling</i> preditivo e modelos de linguagem com recuperação sobre a memória técnica do fórum representa uma alternativa sociotécnica viável e de baixo custo operacional, convertendo o CorText de um sistema opaco em uma plataforma de aprendizado guiado e observabilidade contínua.
+</div>
+
+</body>
+</html>

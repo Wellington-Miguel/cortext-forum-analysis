@@ -145,9 +145,23 @@ crawl4ai/
 │
 ├── dashboard_tcc.py          # Aplicação interativa em Streamlit
 ├── extract_forum.py          # Extrator determinístico e gerador de datasets
+├── generate_pdf_report.py    # Gerador automatizado do relatório técnico completo em PDF
+├── relatorio_tcc_cortext.pdf # Relatório técnico monográfico diagramado em A4
 ├── requirements.txt          # Dependências do projeto (streamlit, plotly, pandas, etc.)
 └── README.md                 # Documentação completa do processo
 ```
+
+---
+
+## 📄 Como Gerar o Relatório Técnico em PDF
+
+Para recompilar o relatório técnico monográfico completo em folha A4 com todos os gráficos vetoriais, conceitos e notas metodológicas:
+
+```powershell
+python generate_pdf_report.py
+```
+
+O documento será compilado e salvo como **`relatorio_tcc_cortext.pdf`** (~418 KB). Ele também fica disponível para download com um clique diretamente no cabeçalho do Dashboard em Streamlit.
 
 ---
 
@@ -157,8 +171,8 @@ Caso seja necessário atualizar a base no futuro com novos tópicos postados no 
 
 ```powershell
 # Execução completa com extração profunda (todas as 34 páginas)
-.\env\Scripts\python extract_forum.py --concurrency 6
+python extract_forum.py --concurrency 6
 
 # Execução rápida apenas dos metadados da listagem
-.\env\Scripts\python extract_forum.py --no-details
+python extract_forum.py --no-details
 ```

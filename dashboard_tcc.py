@@ -225,10 +225,25 @@ if df.empty:
 # Cabeçalho
 st.markdown('<div style="margin-bottom: 12px;"><span class="tcc-badge">TCC • UFBA 2026</span> <span style="color: #94a3b8; font-size: 0.85rem; margin-left: 8px;">Pesquisa Aplicada • Assistente Sociotécnico para Data Profiling & RAG</span></div>', unsafe_allow_html=True)
 st.title("📊 Análise de Fricção em Data Parsing: Evidências Estatísticas do Fórum CorText")
-st.markdown("""
-**Diagnóstico Empírico da Fricção Sociotécnica em Preparação e Ingestão de Corpora (CorText Manager)**  
-*Evidências quantitativas e qualitativas sobre a barreira de entrada enfrentada por pesquisadores na importação e parsing de dados heterogêneos.*
-""")
+col_head_l, col_head_r = st.columns([3, 1])
+with col_head_l:
+    st.markdown("""
+    **Diagnóstico Empírico da Fricção Sociotécnica em Preparação e Ingestão de Corpora (CorText Manager)**  
+    *Evidências quantitativas e qualitativas sobre a barreira de entrada enfrentada por pesquisadores na importação e parsing de dados heterogêneos.*
+    """)
+with col_head_r:
+    pdf_path = "relatorio_tcc_cortext.pdf"
+    if os.path.exists(pdf_path):
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+        st.download_button(
+            label="📄 Baixar Relatório PDF",
+            data=pdf_bytes,
+            file_name="Relatorio_Tecnico_TCC_CorText_UFBA.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            help="Relatório técnico completo em PDF com conceitos, nota metodológica, testes estatísticos e gráficos vetoriais incorporados."
+        )
 
 # Indicadores gerais (KPIs)
 st.markdown("### 📌 Indicadores Gerais de Fricção")
